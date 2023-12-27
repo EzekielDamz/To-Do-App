@@ -12,7 +12,6 @@ body {
 
 .container {
     max-width: 450px;
-
     margin: 0 auto;
     margin-top: 2rem;
     text-align: center;
@@ -36,7 +35,7 @@ flex-direction: column ;
 
 h2 {
     text-align: center;
-    color: gray;
+    color: blueviolet;
     margin-top: 3rem;
 }
 
@@ -80,7 +79,7 @@ p {
     padding: 7px 5px;
     background-color: blueviolet;
     border: none;
-    /* box-shadow: 0px 0px 4px rgba(0, 0, 0.2); */
+    box-shadow: 0px 0px 4px rgba(0, 0, 0.2);
     border-radius: 8px;
     font-size: 17px;
     cursor: pointer;
@@ -122,8 +121,18 @@ p {
 
 /* mobile responsiveness */
 
-/* @media screen and (max-width: 1200px)  {
- 
+@media screen and (max-width: 1200px)  {
+.container {
+        max-width: 80%;
+
+        margin: 0 auto;
+        margin-top: 2rem;
+        text-align: center;
+        background-color: whitesmoke;
+        border-radius: 1rem;
+        border: 3px solid blueviolet;
+        padding: 1rem;
+    }
 
     .input-submit {
         display: flex;
@@ -147,8 +156,8 @@ p {
 
 .submit {
 
-    /* padding: 7px 15px; */
-    /* color: blueviolet;
+    padding: 7px 15px; 
+    color: blueviolet;
 
     font-size: 1rem;
     cursor: pointer;
@@ -161,13 +170,13 @@ p {
         background-color: blueviolet;
     }
 }
-.check-listed { */
-/* 
+.check-listed {
+
     padding: 7px 5px;
     background-color: blueviolet;
     border: none;
-    /* box-shadow: 0px 0px 4px rgba(0, 0, 0.2); */
-    /* border-radius: 8px;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0.2);
+ border-radius: 8px;
     font-size: 17px;
     cursor: pointer;
     color: whitesmoke;
@@ -176,5 +185,5 @@ p {
         background-color: rgb(185, 134, 233);
 
     }
-} */
-/* }   */
+}
+}  
