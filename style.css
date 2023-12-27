@@ -60,7 +60,7 @@ p {
 }
 
 .submit {
-    font-size: 2rem;
+    font-size: 1.3rem;
     padding: 7px 15px;
     color: blueviolet;
     
@@ -82,7 +82,7 @@ p {
     border: none;
     box-shadow: 0px 0px 4px rgba(0, 0, 0.2);
     border-radius: 8px;
-    font-size: 2rem;
+    font-size: 1.3rem;
     cursor: pointer;
     color: whitesmoke;
 
