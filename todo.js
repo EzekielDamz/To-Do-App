@@ -1,6 +1,7 @@
 const submiit = document.querySelector(".submit");
 const input = document.querySelector(".input-field");
 const list = document.querySelector(".list");
+// const taskNumber = document.querySelector(".task");
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -33,25 +34,58 @@ const db = getFirestore(app);
 const userCollection = collection(db, "users");
 
 async function addData() {
+  addNum();
   const inputItem = input.value.trim();
-  if (inputItem ) {
-      const docRef = await addDoc(userCollection, {
-        items: inputItem,
+  if (inputItem) {
+    const docRef = await addDoc(userCollection, {
+      items: inputItem,
+    })
+      .then((docRef) => {
+        console.log("Document written with ID:", docRef.id);
       })
-        .then((docRef) => {
-          console.log("Document written with ID:", docRef.id);
-        })
-        .catch((error) => {
-          console.error("Error adding document:", error);
-        });
-      input.value = "";
-      // Retrieve and render all documents
-      renderTodoItems();
+      .catch((error) => {
+        console.error("Error adding document:", error);
+      });
+    input.value = "";
+    // Retrieve and render all documents
+    renderTodoItems();
+  } else {
+    alert("input field can not be empty");
   }
-  else {
-    alert("input field can not be empty")
- }
 }
+
+// //////////// display the item after the page loads
+
+async function contentLoad() {
+  const querySnapshot = await getDocs(userCollection);
+  if (querySnapshot.size === 0) {
+    alert("Your database is empty \n Add items to your database");
+  } else {
+    querySnapshot.forEach((doc) => {
+      const li = document.createElement("li");
+      li.textContent = doc.data().items;
+      list.appendChild(li);
+
+      const updateBtn = document.createElement("button");
+
+      updateBtn.className = "update-btn";
+      updateBtn.textContent = " update";
+
+      li.appendChild(updateBtn);
+      updateBtn.addEventListener("click", () => {
+        updateData(doc.id);
+      });
+
+      // Add delete icon
+      const deleteIcon = document.createElement("span");
+      deleteIcon.innerHTML = `<i class="fa fa-trash-o" aria-hidden="true"></i>`;
+      deleteIcon.addEventListener("click", () => deleteData(doc.id));
+      li.appendChild(deleteIcon);
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", contentLoad);
 
 async function renderTodoItems() {
   // Clear existing list
@@ -66,9 +100,8 @@ async function renderTodoItems() {
 
     const updateBtn = document.createElement("button");
 
-    updateBtn.className = "update-btn"
+    updateBtn.className = "update-btn";
     updateBtn.textContent = " update";
-  
 
     li.appendChild(updateBtn);
     updateBtn.addEventListener("click", () => {
@@ -103,5 +136,14 @@ async function updateData(docId) {
   }
 }
 
+// count number of data in the db
+//  let count = 0;
+// function addNum() {
+
+//   const add = count + 1;
+
+//   taskNumber.textContent = add;
+// }
+
 // Event listener for the submit button
-submiit.addEventListener("click", addData)
+submiit.addEventListener("click", addData);
