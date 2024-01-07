@@ -34,7 +34,6 @@ const db = getFirestore(app);
 const userCollection = collection(db, "users");
 
 async function addData() {
-  addNum();
   const inputItem = input.value.trim();
   if (inputItem) {
     const docRef = await addDoc(userCollection, {
