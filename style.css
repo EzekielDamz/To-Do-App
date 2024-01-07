@@ -143,9 +143,9 @@ p {
 
 /* mobile responsiveness */
 
- @media screen and (max-width: 1200px) {
+ @media screen and (max-width: 1000px) {
     .container {
-        max-width: 70%; 
+        width: 70%; 
     
         /* margin: 0 auto; */
         margin-top: 2rem;
@@ -243,11 +243,11 @@ p {
                 background-color: #ffecc7;
             }
         }
-                  li:nth-child(1n) {
+                  /* li:nth-child(1n) {
                     display: flex;
                     flex-direction: row;
               
-                 }
+                 } */
                 .update-btn {
                     background: blueviolet;
                     border: none;
