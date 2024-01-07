@@ -1,213 +1,107 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+const submiit = document.querySelector(".submit");
+const input = document.querySelector(".input-field");
+const list = document.querySelector(".list");
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getDatabase,
-  ref,
-  push,
-  onValue,
-  remove,
-} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  updateDoc,
+  doc,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Firebase configuration
 const firebaseConfig = {
-  databaseURL: "https://to-do-app-project-ef94b-default-rtdb.firebaseio.com/",
+  apiKey: "AIzaSyDQbiisP41DcsnhB3XCRH0Lmp9lwSYt_Xk",
+  authDomain: "new-to-do-project.firebaseapp.com",
+  databaseURL: "https://new-to-do-project-default-rtdb.firebaseio.com",
+  projectId: "new-to-do-project",
+  storageBucket: "new-to-do-project.appspot.com",
+  messagingSenderId: "337768432690",
+  appId: "1:337768432690:web:d457aba7802b5877ea282b",
 };
 
 // Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig);
-const database = getDatabase(firebaseApp);
-const todoListRef = ref(database, "TodoList");
+const app = initializeApp(firebaseConfig);
+// Config Firestore
+const db = getFirestore(app);
 
-// DOM elements
-const inputField = document.querySelector(".input-field");
-const submitBtn = document.querySelector(".submit");
-const list = document.querySelector(".list");
-const numOfTask = document.querySelector(".task");
-const checkListedEl = document.querySelector(".check-listed");
-// const listEl = document.querySelector(".check");
+// Collection reference
+const userCollection = collection(db, "users");
 
-// Event listeners
-submitBtn.addEventListener("click", function (e) {
-  showInput();
-  e.preventDefault();
-});
-
-checkListedEl.addEventListener("click", listAllDataFromDB);
-
-// Function to list all data from the database
-function listAllDataFromDB() {
-  onValue(todoListRef, function (snapshot) {
-    list.innerHTML = ""; // Clear existing list
-    const myList = Object.entries(snapshot.val() || {});
-
-    myList.forEach((item) => {
-      const listID = item[0];
-      const listValue = item[1];
-
-      console.log(listValue);
-      const newEl = document.createElement("li");
-
-      // console.log(listID)
-      newEl.textContent = listValue;
-
-      list.appendChild(newEl);
-
-        newEl.addEventListener("click", function () {
-          let removeListItems = ref(database, `TodoList/${listID}`);
-          remove(removeListItems);
+async function addData() {
+  const inputItem = input.value.trim();
+  if (inputItem ) {
+      const docRef = await addDoc(userCollection, {
+        items: inputItem,
+      })
+        .then((docRef) => {
+          console.log("Document written with ID:", docRef.id);
+        })
+        .catch((error) => {
+          console.error("Error adding document:", error);
         });
-    });
-  });
-
+      input.value = "";
+      // Retrieve and render all documents
+      renderTodoItems();
+  }
+  else {
+    alert("input field can not be empty")
+ }
 }
 
-// Function to display input and push to Firebase
-function showInput() {
-  const showListEl = inputField.value.trim();
+async function renderTodoItems() {
+  // Clear existing list
+  list.innerHTML = "";
 
-  if (showListEl) {
-    push(todoListRef, showListEl);
+  const querySnapshot = await getDocs(userCollection);
 
-    // Create and append list item
+  querySnapshot.forEach((doc) => {
     const li = document.createElement("li");
-
-    li.textContent = showListEl;
+    li.textContent = doc.data().items;
     list.appendChild(li);
 
-    // Clear input field
-    inputField.value = "";
+    const updateBtn = document.createElement("button");
 
-    // Increase task count
-    increaseTask();
+    updateBtn.className = "update-btn"
+    updateBtn.textContent = " update";
+  
+
+    li.appendChild(updateBtn);
+    updateBtn.addEventListener("click", () => {
+      updateData(doc.id);
+    });
+
+    // Add delete icon
+    const deleteIcon = document.createElement("span");
+    deleteIcon.innerHTML = `<i class="fa fa-trash-o" aria-hidden="true"></i>`;
+    deleteIcon.addEventListener("click", () => deleteData(doc.id));
+    li.appendChild(deleteIcon);
+  });
+}
+
+async function deleteData(docList) {
+  await deleteDoc(doc(userCollection, docList));
+  renderTodoItems(); // Refresh the list after deletion
+}
+
+// ////// Updating the input field
+
+async function updateData(docId) {
+  const updatedTodo = await prompt("Enter the updated todo:");
+  if (updatedTodo !== null && updatedTodo !== undefined) {
+    const updateListIndb = doc(userCollection, docId);
+    await updateDoc(updateListIndb, {
+      items: updatedTodo,
+    });
+    renderTodoItems();
   } else {
-    // newEltextContent = "";
-    alert("Input field cannot be empty");
+    alert("data not updated");
   }
 }
 
-// Function to increase task count
-function increaseTask() {
-  numOfTask.textContent = parseInt(numOfTask.textContent) + 1;
-}
-
-// //////// Linking database to the project
-
-// import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-
-// import {
-//   getDatabase,
-//   ref,
-//   push,
-//   onValue,
-// } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-
-// const appSettings = {
-//   databaseURL: "https://to-do-app-project-ef94b-default-rtdb.firebaseio.com/",
-// };
-// const data = initializeApp(appSettings);
-// const database = getDatabase(data);
-// const todoListInDB = ref(database, "TodoList");
-
-// const input = document.querySelector(".input-field");
-// const submitBtn = document.querySelector(".submit");
-// const list = document.querySelector(".list");
-// const numOfTask = document.querySelector(".task");
-// const checkListedEl = document.querySelector(".check-listed");
-// const listEl = document.querySelector(".check");
-// // const El = document.querySelector(".EL")
-// //        A submit function
-
-// submitBtn.addEventListener("click", function (e) {
-//   showInput();
-//   e.preventDefault();
-// });
-
-// checkListedEl.addEventListener("click", function () {
-//   listAllDataFromDB();
-//   listEl.style.display = "block";
-// });
-
-// function listAllDataFromDB(items) {
-//   // //// FETCHING DATA FROM THE DATABASE
-
-//          const newEl = document.createElement("li");
-//          listEl.append(newEl);
-//   let itemsValues = items[1]
-
-//   newEl.innerHTML = itemsValues
-
-// }
-
-// // A function a that show how the content are displayed
-// function showInput() {
-//   const li = document.createElement("li");
-//   list.appendChild(li);
-
-//   li.style.backgroundColor = "grey";
-//   li.style.color = "#fff";
-
-//   const showListEl = input.value;
-//   ////// PUSH YOUR LIST TO FIREBASE
-//   push(todoListInDB, showListEl);
-
-//    onValue(todoListInDB, function (snapshot) {
-//      let myList = Object.entries(snapshot.val());
-//      for (let i = 0; i < myList.length; i++) {
-//        let displayListDB = myList[i];
-
-//        let listValue = displayListDB[1];
-
-//        console.log(displayListDB);
-
-//   listAllDataFromDB(displayListDB);
-
-//        // clearListedChecked();
-//      }
-//    });
-//   // upload the items in the li
-//   if (showListEl) {
-//     li.innerHTML = `
-//         ${showListEl}
-//        `;
-//     listEl.style.display = "none";
-
-//     // console.log(todoListInDB, showListEl)
-//     // creating  a delete button with createElement
-//     // const deleteIcon = document.createElement("span");
-//     // deleteIcon.innerHTML = `<i class="fa fa-trash-o" aria-hidden="true" ></i>`;
-//     // styling the delete button
-
-//     // deleteIcon.style.cursor = "pointer ";
-//     // li.appendChild(deleteIcon);
-//     //////////////////////////////// DELETE BUTTON//////////////////////////
-//     deleteIcon.addEventListener("click", function () {
-//       li.remove();
-
-//       // ///////////////////////REDUCE TASK//////////////////////////////
-//       function reduceTask() {
-//         let number = count-- - 2;
-//         numOfTask.textContent = number;
-//       }
-//       reduceTask();
-//     });
-
-//     input.value = "";
-//   } else {
-//     list.style.display = "none";
-//     alert("input field can be empty");
-//   }
-
-//   increaseTask();
-// }
-
-// function clearListedChecked() {
-//   newEl.textContent = "";
-// }
-
-// // ///////////////////////////////////////COUNT TASK/////////////////////////////////////
-
-// let count = 1;
-// function increaseTask() {
-//   let number = count++;
-//   numOfTask.textContent = number;
-// }
+// Event listener for the submit button
+submiit.addEventListener("click", addData)
